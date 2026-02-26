@@ -10,6 +10,7 @@ import {
   fieldErrorMsg,
 } from "./MonumentForm.css";
 import { Input, Select, TextArea, Button } from "../atomic";
+import type { Monument } from '../../types';
 
 interface formState {
   city: string;
@@ -35,7 +36,11 @@ const defaultState: formState = {
   longitude: "",
 };
 
-const MonumentForm = () => {
+interface MonumentFormProps {
+  createMonument: (monument: Omit<Monument, 'id'>) => void;
+}
+
+const MonumentForm: React.FC<MonumentFormProps> = ({ createMonument }) => {
   const [formData, setFormData] = useState<formState>(defaultState);
   const [formErrors, setFormErrors] = useState<errors>({});
   const lastInputRef = useRef<HTMLInputElement>(null);
@@ -111,8 +116,20 @@ const MonumentForm = () => {
     console.log("errors are:", errors);
     setFormErrors(errors);
     if (Object.keys(errors).length === 0) {
+      const { city, state, description, longitude, latitude } = formData;
       // No errors, proceed with form submission
-      console.log("Form submitted successfully:", formData);
+      const modifiedFormData = {
+        city,
+        state,
+        description: description || null,
+        longitude: Number(longitude),
+        latitude: Number(latitude),
+        map_zoom: 15,
+        map_type: 'satellite',
+        img_url: null,
+      }
+      console.log("Form submitted successfully:", modifiedFormData);
+      createMonument(modifiedFormData);
       // Reset form
       setFormData(defaultState);
     } else {

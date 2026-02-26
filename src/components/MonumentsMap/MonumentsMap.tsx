@@ -9,15 +9,15 @@ const MonumentsMap = ({ activeMonument }: MonumentsMapProps) => {
   return (
     <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
     <div>
-      {activeMonument && activeMonument.location && (
+      {activeMonument && activeMonument.latitude && activeMonument.longitude && (
       <Map
       style={{width: '100vw', height: '100vh'}}
-      center={{lat: activeMonument.location.latitude, lng: activeMonument.location.longitude}}
+      center={{lat: activeMonument.latitude, lng: activeMonument.longitude}}
       defaultZoom={12}
       gestureHandling='greedy'
       mapTypeId='satellite'
       >
-        <Marker position={{lat: activeMonument.location.latitude, lng: activeMonument.location.longitude}} />
+        <Marker position={{lat: activeMonument.latitude, lng: activeMonument.longitude}} />
       </Map>
       )}
     </div></APIProvider>

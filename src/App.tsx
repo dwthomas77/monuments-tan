@@ -1,9 +1,8 @@
 import { useState } from "react";
-import type { Monument, MonumentsDataJSON } from "./types";
-import data from "./data/monuments.json";
+import type { Monument } from "./types";
 import MonumentsList from "./components/MonumentsList/MonumentsList";
 import MonumentsMap from "./components/MonumentsMap/MonumentsMap";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import Button from "./components/atomic/Button/Button";
 import {
   fetchMonumentsButton,
@@ -17,35 +16,40 @@ import {
 const API_DOMAIN = import.meta.env.VITE_API_DOMAIN || "localhost";
 const API_PORT = import.meta.env.VITE_API_PORT || "3001";
 
-const monumentsData: MonumentsDataJSON = data;
-const monumentsDataArray: Monument[] = Object.entries(monumentsData).map(
-  ([id, monument]) => ({
-    ...monument,
-    id,
-  })
-);
-
 function App() {
-  const [selectedMonument, setSelectedMonument] = useState<Monument | null>(
-    null
-  );
   const [monumentsFetchCount, setMonumentsFetchCount] = useState(0);
-  const updateActiveMonument = (id: string | null) => {
-    const monument = monumentsDataArray.find((mon) => mon.id === id) || null;
-    setSelectedMonument(monument);
-  };
-
   const { data } = useQuery({
     queryKey: ["monumentsFetchCount"],
     queryFn: async () => {
       const response = await fetch(
-        `http://${API_DOMAIN}:${API_PORT}/api/monuments`
+        `http://${API_DOMAIN}:${API_PORT}/monuments`
       );
-      return await response.json();
+      const data = await response.json();
+      return data?.monuments || [];
     },
     enabled: monumentsFetchCount > 0,
   });
 
+  const createMonument = useMutation({
+    mutationFn: async (monument) => {
+      const response = await fetch('/todos', {
+        method: "post",
+        body: JSON.stringify(monument)
+      })
+      const data = await response.json();
+    },
+  })
+
+  const [selectedMonument, setSelectedMonument] = useState<Monument | null>(
+    null
+  );
+
+  const updateActiveMonument = (id: number | null) => {
+    const monument = data?.find((monument: Monument) => monument.id === id) || null;
+    setSelectedMonument(monument);
+  };
+
+  
   return (
     <div className={app}>
       <div className={appNavColumn}>

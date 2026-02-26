@@ -4,12 +4,13 @@ import states from "../../data/statesHash.json";
 
 interface MonumentsListProps {
   monuments: Monument[];
-  activeMonumentId?: string | null;
-  setActiveMonumentId: (id: string | null) => void;
+  activeMonumentId?: number | null;
+  setActiveMonumentId: (id: number | null) => void;
 }
 
 const sortByState = (monuments: Monument[]) => {
   const monumentsbyState: { [key: string]: Monument[] } = {};
+  console.log('monumnets are', monuments);
   monuments.forEach((monument) => {
     const stateName = states[monument.state as keyof typeof states];
     if (!monumentsbyState[stateName]) {
